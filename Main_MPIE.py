@@ -21,6 +21,8 @@ if __name__=="__main__":
     parser.add_argument('-batch-size', type=int, default=16, help='batch size for training [default: 8]')
     # Save options
     parser.add_argument('-save-place', type=str, default='./MultiPIE_Result')
+    parser.add_argument('-error-analysis', action='store_true', default=False, help='error analysis')
+    parser.add_argument('-analyze-pose', type=int, default=110, help='error analysis pose')
 
     args = parser.parse_args()
 
@@ -43,6 +45,6 @@ if __name__=="__main__":
     save_dir = '{}/{}'.format(args.save_place, args.model_select)
     if not os.path.isdir(save_dir): os.makedirs(save_dir)
 
-    _ = Validation_MPIE(Model, 90, device, save_dir, args)
+    _ = Validation_MPIE(Model, 90, device, save_dir, args, Error_Flag=args.error_analysis)
     print('Completed')
     exit()

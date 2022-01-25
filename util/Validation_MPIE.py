@@ -14,8 +14,8 @@ def Validation_MPIE(Model, epoch, device, save_dir, args, Error_Flag=False):
     csv_file = args.csv_file
     data_place = args.data_place
 
-    GalleryTestPose = ['120']
-    GalleryPose = ['110', '120', '090', '080', '130', '140', '051']
+    GalleryTestPose = ['{}'.format(args.analyze_pose)]
+    GalleryPose = ['110', '120', '090', '080', '130', '140', '051']  # Face left
     ProbePose = ['110', '120', '090', '080', '130',
                  '140', '051', '050', '041', '190',
                  '200', '010', '240']
@@ -38,33 +38,32 @@ def Validation_MPIE(Model, epoch, device, save_dir, args, Error_Flag=False):
     dataloader = DataLoader(transformed_dataset, batch_size=32, shuffle=False)  # , num_workers=6)
 
     Features_List = {'Subject': [], 'Pose': [], 'Illum': [], 'Features': []}
-    counter = 0
-    for i, batch_data in enumerate(dataloader):
+    if not os.path.exists('{}/Features.npy'.format(save_dir)):
+        counter = 0
+        for i, batch_data in enumerate(dataloader):
 
-        batch_image = batch_data[0].to(device)
-        batchImageName = batch_data[1]
+            batch_image = batch_data[0].to(device)
+            batchImageName = batch_data[1]
 
-        Model_Feature = Model(batch_image)
-        features = (Model_Feature.data).cpu().numpy()
+            Model_Feature = Model(batch_image)
+            features = (Model_Feature.data).cpu().numpy()
 
-        for ImgName, feas in zip(batchImageName, features):
-            tmp = ImgName.split('/')
-            Features_List['Subject'].append(int(tmp[2]))
-            Features_List['Pose'].append(int(tmp[-1][10:13]))
-            Features_List['Illum'].append(int(tmp[-1][14:16]))
-            Features_List['Features'].append(feas.reshape(-1, len(feas)))
-        counter += 32
-        print(counter)
-    np.save('{}/Features.npy'.format(save_dir), Features_List)
+            for ImgName, feas in zip(batchImageName, features):
+                tmp = ImgName.split('/')
+                Features_List['Subject'].append(int(tmp[2]))
+                Features_List['Pose'].append(int(tmp[-1][10:13]))
+                Features_List['Illum'].append(int(tmp[-1][14:16]))
+                Features_List['Features'].append(feas.reshape(-1, len(feas)))
+            counter += 32
+            print(counter)
+        np.save('{}/Features.npy'.format(save_dir), Features_List)
+
     # Multi-PIE error analysis
     if Error_Flag:
-
         Performance = np.zeros((20, len(ProbePose)))
         for g_idx, g_pose in enumerate(GalleryTestPose):
-            if g_pose == '110' or g_pose == '120':
-                g_find = np.where((np.array(Features_List['Illum']) == 5) & (np.array(Features_List['Pose']) == int(g_pose)))[0]
-            else:
-                g_find = np.where((np.array(Features_List['Illum']) == 7) & (np.array(Features_List['Pose']) == int(g_pose)))[0]
+            if g_pose == '110' or g_pose == '120': g_find = np.where((np.array(Features_List['Illum']) == 5) & (np.array(Features_List['Pose']) == int(g_pose)))[0]
+            else: g_find = np.where((np.array(Features_List['Illum']) == 7) & (np.array(Features_List['Pose']) == int(g_pose)))[0]
             g_feature = np.squeeze(np.array(Features_List['Features'])[g_find])
             g_subject = np.squeeze(np.array(Features_List['Subject'])[g_find])
 
@@ -108,6 +107,7 @@ def Validation_MPIE(Model, epoch, device, save_dir, args, Error_Flag=False):
     # Multi-PIE testing
     Performance = np.zeros((len(GalleryPose), len(ProbePose)))
     for g_idx, g_pose in enumerate(GalleryPose):
+        # 定義Gallery的角度與光源，pose-90 and pose75 use the Illum-5, others use the Illum-7
         if g_pose == '110' or g_pose == '120': g_find = np.where((np.array(Features_List['Illum']) == 5) & (np.array(Features_List['Pose'])==int(g_pose)))[0]
         else: g_find = np.where((np.array(Features_List['Illum']) == 7) & (np.array(Features_List['Pose'])==int(g_pose)))[0]
         g_feature = np.squeeze(np.array(Features_List['Features'])[g_find])

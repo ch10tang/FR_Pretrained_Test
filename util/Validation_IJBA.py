@@ -94,33 +94,34 @@ def Validation_IJBA(Model, save_dir, NumSplit, epoch, device, args):
     print("Start Validating...")
     Model.eval()
 
-    csv_file = args['IJBA_Root']
-    data_place = args['IJBA_CSV_File']
+    # csv_file = args['IJBA_Root']
+    # data_place = args['IJBA_CSV_File']
 
-    # Load augmented data
-    transform = transforms.Compose([transforms.Resize([224, 224]),
-                                    transforms.ToTensor(),
-                                    ])
-    transformed_dataset = FaceIdPoseDataset(csv_file, data_place, transform=transform)
-    dataloader = DataLoader(transformed_dataset, batch_size=32, shuffle=False)  # , num_workers=6)
+    # # Load augmented data
+    # transform = transforms.Compose([transforms.Resize([224, 224]),
+    #                                 transforms.ToTensor(),
+    #                                 ])
+    # transformed_dataset = FaceIdPoseDataset(csv_file, data_place, transform=transform)
+    # dataloader = DataLoader(transformed_dataset, batch_size=32, shuffle=False)  # , num_workers=6)
+    #
+    # features_all = {}
+    # for i, batch_data in enumerate(dataloader):
+    #
+    #     batch_image = (batch_data[0]*224).to(device)
+    #     batchImageName = batch_data[1]
+    #
+    #     Model_Feature, _ = Model(batch_image)
+    #     features = np.squeeze(Model_Feature.cpu().detach().numpy())
+    #
+    #     for feature, ImgName in zip(features, batchImageName):
+    #         features_all.setdefault('{}/{}'.format(ImgName.split('/')[2], ImgName.split('/')[3].split('.')[0]), feature)
+    #     print(i*batch_image.shape[0])
 
-    features_all = {}
-    for i, batch_data in enumerate(dataloader):
+    features_all = np.load('Features.npy', allow_pickle=True).item()
 
-        batch_image = (batch_data[0]*224).to(device)
-        batchImageName = batch_data[1]
-
-        Model_Feature, _ = Model(batch_image)
-        features = np.squeeze(Model_Feature.cpu().detach().numpy())
-
-        for feature, ImgName in zip(features, batchImageName):
-            features_all.setdefault('{}/{}'.format(ImgName.split('/')[2], ImgName.split('/')[3].split('.')[0]), feature)
-
-        print(i*batch_image.shape[0])
-        # break
 
     # Test phase
-    TAR = Test_Compare(features_all, NumSplit)
+    # TAR = Test_Compare(features_all, NumSplit)
     Rank = Test_Search(features_all, NumSplit)
 
     Performance_Results = {'Epoch':[], 'FAR001':[], 'FAR0001':[], 'Rank1':[], 'Rank5':[]}

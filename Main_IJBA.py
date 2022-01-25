@@ -15,8 +15,8 @@ from util.LoadPretrained import LoadPretrained
 from util.DataLoader import FaceIdPoseDataset
 from util.ConcatPath import ConcatPath
 from util.InputSize_Select import Transform_Select
-from util.Validate_MPIE import Validate_MPIE
-from util.Validate_IJBA import Validate_IJBA
+# from util.Validate_MPIE import Validate_MPIE
+from util.Validation_IJBA import Validation_IJBA
 
 
 
@@ -50,7 +50,7 @@ if __name__=="__main__":
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     Model = Model.to(device)
 
-    _ = Validate_IJBA(Model, 'Temp_IJBA_Feature/IR50', 2, 100, device, args)
+    _ = Validation_IJBA(Model, 'Temp_IJBA_Feature/IR50', 2, 100, device, args)
 
 
 

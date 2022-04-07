@@ -24,5 +24,5 @@ class FaceIdPoseDataset(Dataset):
             exit()
         image = Image.open(img_path).convert('RGB')
         image = self.transform(image)
-
+        
         return [image, imgName]

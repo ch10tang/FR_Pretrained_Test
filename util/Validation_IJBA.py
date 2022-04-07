@@ -29,7 +29,6 @@ def Test_Compare(Feature_Root, NumSplit):
         label = np.concatenate((np.ones((len(Intra), 1)), np.zeros((len(Inter), 1))))
         scores = [cosine_similarity(COMPARE_Features[in1].reshape(1, -1), COMPARE_Features[in2].reshape(1, -1))[0][0]
                for in1, in2 in np.concatenate((Intra, Inter))]
-
         fpr, tpr, thresh = roc_curve(label, scores)
         TAR[0, 0] += tpr[np.argmin(np.abs(fpr - 0.01))]
         TAR[0, 1] += tpr[np.argmin(np.abs(fpr - 0.001))]
@@ -71,13 +70,11 @@ def Test_Search(Feature_Root, NumSplit):
 
 
         scores = cosine_similarity(Probe_Features, Gallery_Features)  # [probe, gallery]
-        candidate_rank = []
+        candidate_rank = []       
         for probe_idx, tmp_scores in zip(np.unique(Probe, axis=0)[:, 1], scores):  # 1st probe subject
             g_sort = np.unique(Gallery, axis=0)[:, 1][np.argsort(-tmp_scores)]
             if len(np.where(g_sort==probe_idx)[0])==0: continue
             else: candidate_rank.append(np.where(g_sort == probe_idx)[0][0])
-
-
 
         cmc = np.zeros([len(np.unique(Gallery, axis=0)[:, 1]), 1])
         for u in range(len(np.unique(Gallery, axis=0)[:, 1])):
@@ -117,19 +114,19 @@ def Validation_IJBA(Model, save_dir, NumSplit, epoch, device, args):
     #         features_all.setdefault('{}/{}'.format(ImgName.split('/')[2], ImgName.split('/')[3].split('.')[0]), feature)
     #     print(i*batch_image.shape[0])
 
-    features_all = np.load('Features.npy', allow_pickle=True).item()
+    features_all = np.load('D:/04_FaceEvaluation/Experiment_IJBA_v05/_Features/ArcFace/Features.npy', allow_pickle=True).item()
 
-
+    
     # Test phase
-    # TAR = Test_Compare(features_all, NumSplit)
+    TAR = Test_Compare(features_all, NumSplit)
     Rank = Test_Search(features_all, NumSplit)
 
     Performance_Results = {'Epoch':[], 'FAR001':[], 'FAR0001':[], 'Rank1':[], 'Rank5':[]}
     Performance_Results['Epoch'].append('epoch-{}'.format(epoch))
-    Performance_Results['FAR001'].append('{:.2f}'.format(TAR[0]))
-    Performance_Results['FAR0001'].append('{:.2f}'.format(TAR[1]))
-    Performance_Results['Rank1'].append('{:.2f}'.format(Rank[0]))
-    Performance_Results['Rank5'].append('{:.2f}'.format(Rank[1]))
+    Performance_Results['FAR001'].append('{:.2f}'.format(TAR[0, 0]))
+    Performance_Results['FAR0001'].append('{:.2f}'.format(TAR[0, 1]))
+    Performance_Results['Rank1'].append('{:.2f}'.format(Rank[0, 0]))
+    Performance_Results['Rank5'].append('{:.2f}'.format(Rank[0, 1]))
 
     save_dir = './{}/Performance_IJBA.csv'.format(save_dir)
     Performance_Results = pd.DataFrame.from_dict(Performance_Results)

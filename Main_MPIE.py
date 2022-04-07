@@ -16,7 +16,7 @@ if __name__=="__main__":
     # learning & saving parameters
     parser.add_argument('-data-place', type=str, default='F:/Database', help='prepared data path to run program')
     parser.add_argument('-csv-file', type=str, default='../DataList/MPIE_Warp7refs_GalleryProbe.csv', help='csv file to load image for training')
-    parser.add_argument('-model-select', type=str, default='VGGFace2_TypeP_Sub4979_Img74522_60_92_WarpAffine7refs_Flip', help='Model Select')
+    parser.add_argument('-model-select', type=str, default='VGGFace2_TypeF_Sub4979_Img74596_0_60_balance_WarpAffine7refs_Flip', help='Model Select')
     parser.add_argument('-cuda', action='store_true', default=True, help='enable the gpu')
     parser.add_argument('-batch-size', type=int, default=16, help='batch size for training [default: 8]')
     # Save options
@@ -32,7 +32,8 @@ if __name__=="__main__":
                  'Light_CNN_29': LightCNN_29Layers(),
                  'Light_CNN_29_v2': LightCNN_29Layers_v2(),
                  'VGGFace2': resnet50_ft(weights_path='Pretrained/VGGFace2/resnet50_ft_dims_2048.pth'),
-                 'VGGFace2_TypeP_Sub4979_Img74522_60_92_WarpAffine7refs_Flip': IR_50(112)
+                 #'VGGFace2_TypeP_Sub4979_Img77566_30_92_WarpAffine7refs': IR_50(112)
+                 '{}'.format(args.model_select): IR_50(112)
     }
     try: BACKBONE = BACKBONE_DICT[args.model_select]
     except: BACKBONE = BACKBONE_DICT['IR-50'] # 假設都是IR-50 base model

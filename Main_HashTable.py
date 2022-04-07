@@ -19,36 +19,25 @@ from util.DataLoader import FaceIdPoseDataset
 from util.ConcatPath import ConcatPath
 from util.InputSize_Select import Transform_Select
 import winsound
-# from util.Validation_MPIE import Validation_MPIE
+
+
+
 
 
 
 if __name__=="__main__":
-    Model_Name = 'VGGFace2_TypeP_Sub4979_Img74567_30_92_balance_WarpAffine7refs_Flip'
-    # File_Name = 'Test10'
+
     parser = argparse.ArgumentParser(description='Eval_SOTA_Model')
     # learning & saving parameters
-    #parser.add_argument('-data-place', type=str, default='./GeneratedImages/{}'.format(File_Name), help='prepared data path to run program')
     parser.add_argument('-data-place', type=str, default='F:/Database', help='prepared data path to run program')
-    #parser.add_argument('-data-place', type=str, default='./GeneratedImages/P7_Style_random_ID_Eu (AVL-MPIE)_090000', help='prepared data path to run program')
-    #parser.add_argument('-csv-file', type=str, default='../DataList/IJBA_WarpAffine7refs_250_250_Clean.csv', help='csv file to load image for training')
-    parser.add_argument('-csv-file', type=str, default='../DataList/IJB-A_FOCropped_250_250_84.csv', help='csv file to load image for training')
-    #parser.add_argument('-csv-file', type=str, default='../DataList/IJBA_PON_Imagination_RdnCode.csv', help='csv file to load image for training')
-    parser.add_argument('-model-select', type=str, default='IR-50', help='Model Select')
-    parser.add_argument('-checkpoints', type=str, default='./Pretrained/{}/Backbone_IR_50_Epoch_90.pth'.format(Model_Name), help='Model Weights')
+    parser.add_argument('-csv-file', type=str, default='../DataList/IJBC_Official_LooseCrop.csv', help='csv file to load image for training')
+    #parser.add_argument('-csv-file', type=str, default='../DataList/IJB-A_FOCropped_250_250_84.csv', help='csv file to load image for training')
+    parser.add_argument('-model-select', type=str, default='VGGFace2', help='Model Select')
     parser.add_argument('-cuda', action='store_true', default=True, help='enable the gpu')
-    parser.add_argument('-batch-size', type=int, default=8, help='batch size for training [default: 8]')
+    parser.add_argument('-batch-size', type=int, default=32, help='batch size for training [default: 8]')
     # Evaluation options
-    #parser.add_argument('-generate-place', type=str,
-    #                    default='../../04_FaceEvaluation/Experiment_IJBA_v05/_Features/{}'.format(Model_Name),
-    #                    help='prepared data path to run program')
-    parser.add_argument('-generate-place', type=str, default='./_Features/{}'.format(Model_Name), help='prepared data path to run program')                    
-    # parser.add_argument('-generate-place', type=str,
-    #                     default='./{}_{}'.format(File_Name, Model_Name),
-    #                     help='prepared data path to run program')                            
-    # parser.add_argument('-generate-place', type=str,
-    #                     default='../../04_FaceEvaluation/Experiment_IJBA_v05_MS1M/_Features/{}'.format(Model_Name),
-    #                     help='prepared data path to run program')
+    # parser.add_argument('-generate-place', type=str, default='D:/04_FaceEvaluation/Experiment_IJBA_Mean_v02/Feature/SA_L1_FNM_MB4_Fea3500_190_Illum_Sym001_All_w_AllGP_l1_3_0', help='prepared data path to run program')
+    parser.add_argument('-generate-place', type=str, default='../../04_FaceEvaluation/Experiment_IJBC_Tutorial/_Features/VGGFace2_LooseCrop', help='prepared data path to run program')
     parser.add_argument('-Save-Features', action='store_true', default=True, help='enable the gpu')
     parser.add_argument('-Eval-CFP', action='store_true', default=False, help='enable the gpu')
 
@@ -60,16 +49,13 @@ if __name__=="__main__":
                  'Light_CNN_29': LightCNN_29Layers(),
                  'Light_CNN_29_v2': LightCNN_29Layers_v2(),
                  'VGGFace2': resnet50_ft(weights_path='Pretrained/VGGFace2/resnet50_ft_dims_2048.pth'),
-                 'ArcFace_AVL_LP': ArcFace_AVL_LargePose([112, 112]),
-                 'ArcFace_LP': ArcFace_LargePose([112, 112]),
     }
-    Model = BACKBONE_DICT[args.model_select]
-    print('Loading {}'.format(args.checkpoints))
-    checkpoint = torch.load(args.checkpoints)
-    Model.load_state_dict(checkpoint)
+    if args.model_select in BACKBONE_DICT: BACKBONE = BACKBONE_DICT[args.model_select]
+    else: BACKBONE = IR_50(112)
+    Model = LoadPretrained(BACKBONE, args)
 
     save_dir = '{}'.format(args.generate_place)
-    if not os.path.isdir(save_dir): os.makedirs(save_dir)
+    if not os.path.exists(save_dir): os.makedirs(save_dir)
     if not args.Save_Features and not args.Eval_CFP:
         print('Please select valid option for saving features (args.Save_Features) or evalating on CFP (args.Eval_CFP)')
         print('Loading the default setting (Save_Features)')
@@ -83,21 +69,24 @@ if __name__=="__main__":
 
     # Load augmented data
     transforms = Transform_Select(args)
-    transformed_dataset = FaceIdPoseDataset(args.csv_file, args.data_place,
-                                            transform=transforms)
+    transformed_dataset = FaceIdPoseDataset(args.csv_file, args.data_place, transform=transforms)
     dataloader = DataLoader(transformed_dataset, batch_size=args.batch_size, shuffle=False)  # , num_workers=6)
 
     Features_List = {'Subject':[], 'Pose':[], 'ImgNum':[], 'Features':[]}
+
     count = 0
     minibatch_size = args.batch_size
-
     Frame = {}
     for i, batch_data in enumerate(dataloader):
-        if args.model_select == 'VGGFace2': batch_image = (batch_data[0]*255).to(device)
+   
+        if args.model_select == 'VGGFace2': 
+            #https://github.com/ox-vgg/vgg_face2/issues/17
+            #batch_image = (batch_data[0]*255 - torch.Tensor([91.4953, 103.8827, 131.0912]).view((3,1,1))).to(device)
+            batch_image = (batch_data[0]*255 - torch.Tensor([131.0912, 103.8827, 91.4953]).view((3,1,1))).to(device) #PIL default (RGB) 
+            
         else: batch_image = batch_data[0].to(device)
 
         _ = Model(batch_image)
-
         try: Model_Feature = Model.feature
         except: Model_Feature = Model.module.feature
 
@@ -112,6 +101,7 @@ if __name__=="__main__":
                 Frame.setdefault('{}/{}'.format(tmp[-2], tmp[-1].split('.')[0]), feature)
             count += minibatch_size
             print("Finish Processing {} images...".format(count))
+
         if args.Eval_CFP:
             for ImgName, feas in zip(batchImageName, features):
                 tmp = ImgName.split('/')
@@ -124,9 +114,9 @@ if __name__=="__main__":
 
             count += minibatch_size
             print("Finish Processing {} images...".format(count))
-
+    
     np.save('{}/Features.npy'.format(save_dir), Frame)
-
+    
     if args.Eval_CFP:
         print('Loading the CFP protocol ...')
 
@@ -226,15 +216,3 @@ if __name__=="__main__":
     frequency = 2500  # Set Frequency To 2500 Hertz
     duration = 1000  # Set Duration To 1000 ms == 1 second
     winsound.Beep(frequency, duration)
-
-
-
-
-
-
-
-
-
-
-
-

@@ -18,6 +18,6 @@ Codes
 4. Main_InsightFace.py: ```to be filled```.
 5. Main_Manual.py: Similar to 3), but is used to test the POE models. 
 6. Main_IJBA.py: Evaluate the IJB-A by template pooling. The features are stored in dictionary, where the keys are the image name, and the values are the features. 
-7. Main_MPIE.py: Evaluate the Multi-PIE
+7. Main_MPIE.py: Evaluate the Multi-PIE dataset.
 8. Main_PON_Test.py: It is used to extract the features of the generated images. 
 

@@ -38,19 +38,13 @@ def LoadPretrained(Model, args):
         checkpoint = torch.load('./Pretrained/ms1m_ir50/backbone_ir50_ms1m_epoch63.pth')
         Model.load_state_dict(checkpoint)
 
-    # elif args.model_select == 'VGGFace2_TypeP_Sub4979_Img74522_60_92_WarpAffine7refs_Flip':
-    #     print("Loading {} pretrained model".format(args.model_select))
-    #     checkpoint = torch.load('./Pretrained/VGGFace2_TypeP_Sub4979_Img74522_60_92_WarpAffine7refs_Flip/Backbone_IR_50_Epoch_90.pth')
-    #     Model.load_state_dict(checkpoint)
-
     else:
-        #if os.path.exists('./Pretrained/{}/Backbone_IR_50_Epoch_90.pth'.format(args.model_select)):
-        #    checkpoint = torch.load('./Pretrained/{}/Backbone_IR_50_Epoch_90.pth'.format(args.model_select))
-        if os.path.exists('./Pretrained/{}/Backbone_IR_50_Epoch_90.pth'.format(args.model_select)):
-            checkpoint = torch.load('./Pretrained/{}/Backbone_IR_50_Epoch_90.pth'.format(args.model_select))
+        epoch = 90 if args.epoch is None else args.epoch
+        if os.path.exists('./Pretrained/{}/Backbone_IR_50_Epoch_{}.pth'.format(args.model_select, epoch)):
+            checkpoint = torch.load('./Pretrained/{}/Backbone_IR_50_Epoch_{}.pth'.format(args.model_select, epoch))
             Model.load_state_dict(checkpoint)
         else:
-            print('Please select valid pretrained model !')
+            print('Please select valid pre-trained model!')
             exit()
     print("Loading {} successfully!".format(args.model_select))
 

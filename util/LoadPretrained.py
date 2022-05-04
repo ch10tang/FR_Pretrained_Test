@@ -40,8 +40,9 @@ def LoadPretrained(Model, args):
 
     else:
         epoch = 90 if args.epoch is None else args.epoch
-        if os.path.exists('./Pretrained/{}/Backbone_IR_50_Epoch_{}.pth'.format(args.model_select, epoch)):
-            checkpoint = torch.load('./Pretrained/{}/Backbone_IR_50_Epoch_{}.pth'.format(args.model_select, epoch))
+        model_path = './Pretrained' if args.model_path is None else args.model_path
+        if os.path.exists('{}/{}/Backbone_IR_50_Epoch_{}.pth'.format(model_path, args.model_select, epoch)):
+            checkpoint = torch.load('{}/{}/Backbone_IR_50_Epoch_{}.pth'.format(model_path, args.model_select, epoch))
             Model.load_state_dict(checkpoint)
         else:
             print('Please select valid pre-trained model!')

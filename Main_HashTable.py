@@ -16,10 +16,11 @@ if __name__=="__main__":
     # learning & saving parameters
     parser.add_argument('-data-place', type=str, default='F:/Database/IJBC/IJBC_Official_ArcFace_112_112', help='prepared data path to run program')
     parser.add_argument('-csv-file', type=str, default='../DataList/IJBC_Official_Aligned.csv', help='csv file to load image for training')
-    parser.add_argument('-model-select', type=str, default='VGGFace2_TypeS_Sub4979_Img74861_30_60_WarpAffine7refs', help='Model Select')
-    parser.add_argument('-epoch', type=int, default=None, help='The epoch of the encoder')
     parser.add_argument('-batch-size', type=int, default=32, help='batch size for training [default: 8]')
     # Evaluation options
+    parser.add_argument('-model-select', type=str, default='VGGFace2_TypeS_Sub4979_Img74861_30_60_WarpAffine7refs', help='Model Select')
+    parser.add_argument('-model-path', type=int, default=None, help='The model path of the encoder')
+    parser.add_argument('-epoch', type=int, default=None, help='The epoch of the encoder')
     parser.add_argument('-generate-place', type=str, default='./Test', help='prepared data path to run program')
     args = parser.parse_args()
 
@@ -35,10 +36,6 @@ if __name__=="__main__":
 
     save_dir = '{}'.format(args.generate_place)
     if not os.path.exists(save_dir): os.makedirs(save_dir)
-    if not args.Save_Features and not args.Eval_CFP:
-        print('Please select valid option for saving features (args.Save_Features) or evalating on CFP (args.Eval_CFP)')
-        print('Loading the default setting (Save_Features)')
-        args.Eval_CFP = True
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     Model = Model.to(device)

@@ -25,7 +25,6 @@ import winsound
 
 if __name__=="__main__":
     Model_Name = 'VGGFace2_TypeP_Sub4979_Img74567_30_92_balance_WarpAffine7refs_Flip'
-    # File_Name = 'Test10'
     parser = argparse.ArgumentParser(description='Eval_SOTA_Model')
     # learning & saving parameters
     #parser.add_argument('-data-place', type=str, default='./GeneratedImages/{}'.format(File_Name), help='prepared data path to run program')
@@ -39,16 +38,7 @@ if __name__=="__main__":
     parser.add_argument('-cuda', action='store_true', default=True, help='enable the gpu')
     parser.add_argument('-batch-size', type=int, default=8, help='batch size for training [default: 8]')
     # Evaluation options
-    #parser.add_argument('-generate-place', type=str,
-    #                    default='../../04_FaceEvaluation/Experiment_IJBA_v05/_Features/{}'.format(Model_Name),
-    #                    help='prepared data path to run program')
     parser.add_argument('-generate-place', type=str, default='./_Features/{}'.format(Model_Name), help='prepared data path to run program')                    
-    # parser.add_argument('-generate-place', type=str,
-    #                     default='./{}_{}'.format(File_Name, Model_Name),
-    #                     help='prepared data path to run program')                            
-    # parser.add_argument('-generate-place', type=str,
-    #                     default='../../04_FaceEvaluation/Experiment_IJBA_v05_MS1M/_Features/{}'.format(Model_Name),
-    #                     help='prepared data path to run program')
     parser.add_argument('-Save-Features', action='store_true', default=True, help='enable the gpu')
     parser.add_argument('-Eval-CFP', action='store_true', default=False, help='enable the gpu')
 

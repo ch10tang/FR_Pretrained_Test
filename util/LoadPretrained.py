@@ -44,6 +44,8 @@ def LoadPretrained(Model, args):
     #     Model.load_state_dict(checkpoint)
 
     else:
+        #if os.path.exists('./Pretrained/{}/Backbone_IR_50_Epoch_90.pth'.format(args.model_select)):
+        #    checkpoint = torch.load('./Pretrained/{}/Backbone_IR_50_Epoch_90.pth'.format(args.model_select))
         if os.path.exists('./Pretrained/{}/Backbone_IR_50_Epoch_90.pth'.format(args.model_select)):
             checkpoint = torch.load('./Pretrained/{}/Backbone_IR_50_Epoch_90.pth'.format(args.model_select))
             Model.load_state_dict(checkpoint)

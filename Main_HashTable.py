@@ -31,7 +31,6 @@ if __name__=="__main__":
     # learning & saving parameters
     parser.add_argument('-data-place', type=str, default='F:/Database', help='prepared data path to run program')
     parser.add_argument('-csv-file', type=str, default='../DataList/IJBC_Official_LooseCrop.csv', help='csv file to load image for training')
-    #parser.add_argument('-csv-file', type=str, default='../DataList/IJB-A_FOCropped_250_250_84.csv', help='csv file to load image for training')
     parser.add_argument('-model-select', type=str, default='VGGFace2', help='Model Select')
     parser.add_argument('-cuda', action='store_true', default=True, help='enable the gpu')
     parser.add_argument('-batch-size', type=int, default=32, help='batch size for training [default: 8]')

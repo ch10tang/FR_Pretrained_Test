@@ -9,19 +9,21 @@ import numpy as np
 from util.LoadPretrained import LoadPretrained
 from util.DataLoader import FaceIdPoseDataset
 from util.InputSize_Select import Transform_Select
+import shutil
+
 
 if __name__=="__main__":
 
     parser = argparse.ArgumentParser(description='Eval_SOTA_Model')
     # learning & saving parameters
-    parser.add_argument('-data-place', type=str, default='F:/Database/IJBC/IJBC_Official_ArcFace_112_112', help='prepared data path to run program')
-    parser.add_argument('-csv-file', type=str, default='../DataList/IJBC_Official_Aligned.csv', help='csv file to load image for training')
+    parser.add_argument('-data-place', type=str, default='./GeneratedImg_SGAN2Improvement/StyleGAN2_VGGFace2_Profile_feaMap_add_idsignal_translayer_070000', help='prepared data path to run program')
+    parser.add_argument('-csv-file', type=str, default='./DataList/IJBA_POEs_112_112_StyleGAN2_Profile.csv', help='csv file to load image for training')
     parser.add_argument('-batch-size', type=int, default=32, help='batch size for training [default: 8]')
     # Evaluation options
-    parser.add_argument('-model-select', type=str, default='VGGFace2_TypeS_Sub4979_Img74861_30_60_WarpAffine7refs', help='Model Select')
+    parser.add_argument('-model-select', type=str, default='VGGFace2_TypeP_Sub4979_Img74522_60_92_ArcMimic_Lr001', help='Model Select')
     parser.add_argument('-model-path', type=int, default=None, help='The model path of the encoder')
-    parser.add_argument('-epoch', type=int, default=None, help='The epoch of the encoder')
-    parser.add_argument('-generate-place', type=str, default='./Test', help='prepared data path to run program')
+    parser.add_argument('-epoch', type=int, default=17, help='The epoch of the encoder')
+    parser.add_argument('-generate-place', type=str, default='./Features_Gen', help='prepared data path to run program')
     args = parser.parse_args()
 
     BACKBONE_DICT = {'IR-50': IR_50(112),
@@ -33,10 +35,13 @@ if __name__=="__main__":
     if args.model_select in BACKBONE_DICT: BACKBONE = BACKBONE_DICT[args.model_select]
     else: BACKBONE = IR_50(112)
     Model = LoadPretrained(BACKBONE, args)
-
-    save_dir = '{}/{}'.format(args.generate_place, args.model_select)
+   
+    save_dir = '{}/{}'.format(args.generate_place, args.data_place.split('/')[-1])
     if not os.path.exists(save_dir): os.makedirs(save_dir)
-
+   
+    shutil.copy('Main_HashTable_Gen.py', '{}/Main_HashTable_Gen.py'.format(save_dir))
+    
+    
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     Model = Model.to(device)
     Model.eval()

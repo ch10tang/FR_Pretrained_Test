@@ -16,13 +16,16 @@ if __name__=="__main__":
 
     parser = argparse.ArgumentParser(description='Eval_SOTA_Model')
     # learning & saving parameters
-    parser.add_argument('-data-place', type=str, default='./GeneratedImg_SGAN2Improvement/StyleGAN2_VGGFace2_Profile_feaMap_add_idsignal_translayer_070000', help='prepared data path to run program')
+    # parser.add_argument('-data-place', type=str, default='./GeneratedImg_SGAN2Improvement/StyleGAN2_Profile_feaMap_cat_idsignal_translayer_IJBC', help='prepared data path to run program')
+    # parser.add_argument('-csv-file', type=str, default='./DataList/IJBC_POEs_112_112_StyleGAN2_Profile.csv', help='csv file to load image for training')
+    parser.add_argument('-data-place', type=str, default='./GeneratedImg_SGAN2Improvement/StyleGAN2_Profile_feaMap_cat_idsignal_translayer_GE_styleloss_140000', help='prepared data path to run program')
     parser.add_argument('-csv-file', type=str, default='./DataList/IJBA_POEs_112_112_StyleGAN2_Profile.csv', help='csv file to load image for training')
     parser.add_argument('-batch-size', type=int, default=32, help='batch size for training [default: 8]')
     # Evaluation options
-    parser.add_argument('-model-select', type=str, default='VGGFace2_TypeP_Sub4979_Img74522_60_92_ArcMimic_Lr001', help='Model Select')
+    # parser.add_argument('-model-select', type=str, default='VGGFace2_TypeP_Sub4979_Img74522_60_92_ArcMimic_Generated70', help='Model Select')
+    parser.add_argument('-model-select', type=str, default='VGGFace2_TypeP_Sub4979_Img74522_60_92_WarpAffine7refs_Flip', help='Model Select')
     parser.add_argument('-model-path', type=int, default=None, help='The model path of the encoder')
-    parser.add_argument('-epoch', type=int, default=17, help='The epoch of the encoder')
+    parser.add_argument('-epoch', type=int, default=None, help='The epoch of the encoder')
     parser.add_argument('-generate-place', type=str, default='./Features_Gen', help='prepared data path to run program')
     args = parser.parse_args()
 

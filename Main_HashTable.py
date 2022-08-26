@@ -18,8 +18,8 @@ if __name__=="__main__":
     parser.add_argument('-csv-file', type=str, default='../DataList/IJBC_Official_Aligned.csv', help='csv file to load image for training')
     parser.add_argument('-batch-size', type=int, default=32, help='batch size for training [default: 8]')
     # Evaluation options
-    parser.add_argument('-model-select', type=str, default='VGGFace2_TypeS_Sub4979_Img74861_30_60_WarpAffine7refs', help='Model Select')
-    parser.add_argument('-model-path', type=int, default=None, help='The model path of the encoder')
+    parser.add_argument('-model-select', type=str, default='', help='Model Select')
+    parser.add_argument('-model-path', type=str, default=None, help='The model path of the encoder')
     parser.add_argument('-epoch', type=int, default=None, help='The epoch of the encoder')
     parser.add_argument('-generate-place', type=str, default='./Test', help='prepared data path to run program')
     args = parser.parse_args()
@@ -28,7 +28,7 @@ if __name__=="__main__":
                  'Light_CNN_9': LightCNN_9Layers(),
                  'Light_CNN_29': LightCNN_29Layers(),
                  'Light_CNN_29_v2': LightCNN_29Layers_v2(),
-                 'VGGFace2': resnet50_ft(weights_path='Pretrained/VGGFace2/resnet50_ft_dims_2048.pth'),
+                 # 'VGGFace2': resnet50_ft(weights_path='Pretrained/VGGFace2/resnet50_ft_dims_2048.pth'),
     }
     if args.model_select in BACKBONE_DICT: BACKBONE = BACKBONE_DICT[args.model_select]
     else: BACKBONE = IR_50(112)

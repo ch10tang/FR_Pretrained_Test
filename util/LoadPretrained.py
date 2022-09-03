@@ -44,6 +44,7 @@ def LoadPretrained(Model, args):
         if os.path.exists('{}/{}/Backbone_IR_50_Epoch_{}.pth'.format(model_path, args.model_select, epoch)):
             checkpoint = torch.load('{}/{}/Backbone_IR_50_Epoch_{}.pth'.format(model_path, args.model_select, epoch))
             Model.load_state_dict(checkpoint)
+            args.model_select = model_path.split('/')[-1]
         else:
             print('Please select valid pre-trained model!')
             exit()
